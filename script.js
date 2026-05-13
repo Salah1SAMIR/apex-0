@@ -258,6 +258,7 @@ async function submitAddCustomer() {
   await apiCall('add_customer', 'POST', { name, email, phone, total_orders, total_spent, status: 'active' });
   closeAddCustomerModal();
   fetchCustomers();
+  setTimeout(updateDashboardStats, 100);
 }
 
 async function deleteEmployee(id) {
@@ -784,13 +785,18 @@ async function submitAddInvoice() {
   const now = new Date();
   const date = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
   
-  // Format due date similarly if it's a date string
-  const dd = new Date(dueDate);
+  // Format due date safely
+  let dd = new Date(dueDate);
+  if (isNaN(dd.getTime())) {
+    dd = new Date();
+    dd.setDate(dd.getDate() + 30); // Default 30 days if invalid
+  }
   const formattedDueDate = `${dd.getDate()} ${months[dd.getMonth()]} ${dd.getFullYear()}`;
   
   await apiCall('add_invoice', 'POST', {id, client, issue_date: date, due_date: formattedDueDate, amount: parseInt(amount), status, payment_method: paymentMethod});
   closeAddInvoiceModal();
   fetchInvoices();
+  setTimeout(updateDashboardStats, 100); // Force dashboard update
 }
 
 // Product Form
@@ -809,6 +815,7 @@ async function submitAddProduct() {
   await apiCall('add_product', 'POST', {name, category, quantity: qty, min_quantity: minQty, price, status});
   closeAddProductModal();
   fetchProducts();
+  setTimeout(updateDashboardStats, 100);
 }
 
 // Order Form
