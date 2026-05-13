@@ -2,6 +2,7 @@ let isDark = true;
 let charts = {};
 let globalEmployees = [];
 let globalInvoices = [];
+let globalProducts = [];
 
 function doLogin() {
   document.getElementById('loginScreen').style.display = 'none';
@@ -280,10 +281,31 @@ async function deleteEmployee(id) {
   }
 }
 
+function updateDashboardStats() {
+  // Update Total Employees
+  const empEl = document.getElementById('dashTotalEmployees');
+  if(empEl) empEl.textContent = globalEmployees.length;
+
+  // Update Stock Value
+  const stockEl = document.getElementById('dashStockValue');
+  if(stockEl) {
+    const totalVal = globalProducts.reduce((sum, p) => sum + (p.price * p.quantity), 0);
+    stockEl.textContent = (totalVal / 1000).toFixed(1) + 'K';
+  }
+
+  // Update Total Revenue
+  const revEl = document.getElementById('dashTotalRevenue');
+  if(revEl) {
+    const totalRev = globalInvoices.reduce((sum, inv) => inv.status === 'success' ? sum + parseFloat(inv.amount) : sum, 0);
+    revEl.textContent = (totalRev / 1000000).toFixed(1) + 'M';
+  }
+}
+
 async function fetchEmployees() {
   try {
     const employees = await apiCall('employees');
     globalEmployees = employees;
+    updateDashboardStats();
     const grid = document.getElementById('employeesGrid');
     const settingsTable = document.getElementById('settingsUsersTableBody');
     
@@ -352,7 +374,7 @@ async function fetchInvoices() {
   try {
     const invoices = await apiCall('invoices');
     globalInvoices = invoices;
-    
+    updateDashboardStats();
     const tbody = document.getElementById('invoicesTableBody');
     if(tbody) tbody.innerHTML = '';
     
@@ -641,6 +663,8 @@ function updatePandLNumbers() {
 async function fetchProducts() {
   try {
     const products = await apiCall('products');
+    globalProducts = products;
+    updateDashboardStats();
     const tbody = document.getElementById('productsTableBody');
     if(tbody) {
       tbody.innerHTML = '';
@@ -797,7 +821,6 @@ async function submitAddProduct() {
 }
 
 // Order Form
-let globalProducts = [];
 async function openAddOrderModal() { 
   document.getElementById('addOrderModalOverlay').classList.add('active'); 
   const select = document.getElementById('newOrdProduct');
@@ -898,7 +921,7 @@ async function saveSettings() {
 }
 
 // Start
-doLogin();
+setTimeout(initCharts, 200); // Wait for DOM to settle
 fetchEmployees();
 fetchInvoices();
 fetchPandL();
