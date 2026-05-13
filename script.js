@@ -4,16 +4,7 @@ let globalEmployees = [];
 let globalInvoices = [];
 let globalProducts = [];
 
-function doLogin() {
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('appLayout').style.display = 'flex';
-  setTimeout(initCharts, 150);
-}
 
-function doLogout() {
-  document.getElementById('appLayout').style.display = 'none';
-  document.getElementById('loginScreen').style.display = 'flex';
-}
 
 function navTo(page, el) {
   document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));

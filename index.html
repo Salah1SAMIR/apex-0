@@ -17,23 +17,6 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="login-bg" id="loginScreen">
-  <div class="login-card">
-    <div class="login-logo">
-      <div class="login-logo-icon">AX</div>
-      <h2>APEX SYSTEMS</h2>
-      <p>نظام إدارة الموارد المتكامل</p>
-      <p style="font-size:12px;color:var(--accent);margin-top:8px;font-weight:600">المهندس صلاح سمير</p>
-    </div>
-    <div class="login-form">
-      <h3>مرحباً بعودتك</h3>
-      <p>قم بتسجيل الدخول للمتابعة</p>
-      <div class="form-group"><label class="form-label">البريد الإلكتروني</label><input class="form-input" type="email" value="admin@apex-systems.io"></div>
-      <div class="form-group"><label class="form-label">كلمة المرور</label><input class="form-input" type="password" value="••••••••"></div>
-      <button class="login-btn" onclick="doLogin()">تسجيل الدخول &larr;</button>
-    </div>
-  </div>
-</div>
 <div class="notif-panel" id="notifPanel">
   <div class="notif-header"><h4>الإشعارات</h4><span style="font-size:12px;color:var(--accent);cursor:pointer">تعيين الكل كمقروء</span></div>
   <div class="notif-item unread"><div class="notif-icon" style="background:var(--green-bg);color:var(--green)"><i class="fas fa-check-circle"></i></div><div class="notif-body"><strong>طلب جديد #4821</strong><span>شركة النور · منذ 5 دقائق</span></div></div>
@@ -42,7 +25,7 @@
   <div class="notif-item"><div class="notif-icon" style="background:var(--purple-bg);color:var(--purple)"><i class="fas fa-user-plus"></i></div><div class="notif-body"><strong>موظف جديد: سارة محمد</strong><span>قسم التقنية · منذ 3 ساعات</span></div></div>
 </div>
 
-<div class="layout" id="appLayout" style="display:none">
+<div class="layout" id="appLayout" style="display:flex">
   <nav class="sidebar" id="sidebar">
     <div class="sidebar-logo">
       <div class="logo-icon">AX</div>
@@ -87,10 +70,10 @@
           <p>مرحباً مهندس صلاح، ملخص أداء النظام لليوم</p>
         </div>
         <div class="cards-grid">
-          <div class="stat-card blue" onclick="navTo('finance',document.querySelectorAll('.nav-item')[1])"><div class="stat-icon blue"><i class="fas fa-dollar-sign"></i></div><div class="stat-label">إجمالي الإيرادات</div><div class="stat-value">2.4M</div><div class="stat-change up"><i class="fas fa-arrow-up"></i> +18.4% هذا الشهر</div></div>
-          <div class="stat-card green" onclick="navTo('sales',document.querySelectorAll('.nav-item')[2])"><div class="stat-icon green"><i class="fas fa-shopping-bag"></i></div><div class="stat-label">الطلبات الجديدة</div><div class="stat-value">1,284</div><div class="stat-change up"><i class="fas fa-arrow-up"></i> +7.2% هذا الأسبوع</div></div>
-          <div class="stat-card amber" onclick="navTo('inventory',document.querySelectorAll('.nav-item')[3])"><div class="stat-icon amber"><i class="fas fa-boxes"></i></div><div class="stat-label">قيمة المخزون</div><div class="stat-value">847K</div><div class="stat-change down"><i class="fas fa-arrow-down"></i> -3.1% هذا الشهر</div></div>
-          <div class="stat-card purple" onclick="navTo('hr',document.querySelectorAll('.nav-item')[4])"><div class="stat-icon purple"><i class="fas fa-users"></i></div><div class="stat-label">إجمالي الموظفين</div><div class="stat-value">342</div><div class="stat-change up"><i class="fas fa-arrow-up"></i> +4 موظفين جدد</div></div>
+          <div class="stat-card blue" onclick="navTo('finance',document.querySelectorAll('.nav-item')[1])"><div class="stat-icon blue"><i class="fas fa-dollar-sign"></i></div><div class="stat-label">إجمالي الإيرادات</div><div class="stat-value" id="dashTotalRevenue">2.4M</div><div class="stat-change up"><i class="fas fa-arrow-up"></i> +18.4% هذا الشهر</div></div>
+          <div class="stat-card green" onclick="navTo('sales',document.querySelectorAll('.nav-item')[2])"><div class="stat-icon green"><i class="fas fa-shopping-bag"></i></div><div class="stat-label">الطلبات الجديدة</div><div class="stat-value" id="dashTotalOrders">1,284</div><div class="stat-change up"><i class="fas fa-arrow-up"></i> +7.2% هذا الأسبوع</div></div>
+          <div class="stat-card amber" onclick="navTo('inventory',document.querySelectorAll('.nav-item')[3])"><div class="stat-icon amber"><i class="fas fa-boxes"></i></div><div class="stat-label">قيمة المخزون</div><div class="stat-value" id="dashStockValue">847K</div><div class="stat-change down"><i class="fas fa-arrow-down"></i> -3.1% هذا الشهر</div></div>
+          <div class="stat-card purple" onclick="navTo('hr',document.querySelectorAll('.nav-item')[4])"><div class="stat-icon purple"><i class="fas fa-users"></i></div><div class="stat-label">إجمالي الموظفين</div><div class="stat-value" id="dashTotalEmployees">342</div><div class="stat-change up"><i class="fas fa-arrow-up"></i> +4 موظفين جدد</div></div>
         </div>
         <div class="charts-row">
           <div class="chart-card"><div class="card-header"><div><div class="card-title">الإيرادات والمصروفات</div><div class="card-subtitle">آخر 8 أشهر</div></div><span class="badge green">+18.4%</span></div><div class="chart-wrap"><canvas id="revenueChart"></canvas></div></div>
