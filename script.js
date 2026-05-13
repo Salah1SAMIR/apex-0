@@ -170,7 +170,6 @@ const MOCK_DATA = {
 };
 
 // Helper to handle API calls with Demo Fallback
-// Helper to handle API calls with Demo Fallback
 async function apiCall(action, method = 'GET', body = null) {
   if (useMock) {
     const getStorage = (key) => JSON.parse(localStorage.getItem('apex_' + key)) || MOCK_DATA[key];
@@ -178,7 +177,13 @@ async function apiCall(action, method = 'GET', body = null) {
 
     return new Promise((resolve) => {
       setTimeout(() => {
-        if (action === 'get_employees') resolve(getStorage('employees'));
+        if (action === 'employees' || action === 'get_employees') resolve(getStorage('employees'));
+        else if (action === 'products' || action === 'get_products') resolve(getStorage('products'));
+        else if (action === 'customers' || action === 'get_customers') resolve(getStorage('customers'));
+        else if (action === 'invoices' || action === 'get_invoices') resolve(getStorage('invoices'));
+        else if (action === 'expenses' || action === 'get_expenses') resolve(getStorage('expenses'));
+        else if (action === 'orders' || action === 'get_orders') resolve(getStorage('orders'));
+        
         else if (action === 'add_employee') {
           const emps = getStorage('employees');
           const newId = Math.floor(Math.random() * 1000);
@@ -193,9 +198,26 @@ async function apiCall(action, method = 'GET', body = null) {
           setStorage('employees', emps);
           resolve({ success: true });
         }
-        else if (action === 'get_products') resolve(getStorage('products'));
-        else if (action === 'get_customers') resolve(getStorage('customers'));
-        else if (action === 'get_invoices') resolve(getStorage('invoices'));
+        else if (action === 'add_product') {
+          const items = getStorage('products');
+          const newItem = { ...body, id: Date.now() };
+          items.push(newItem);
+          setStorage('products', items);
+          resolve({ success: true });
+        }
+        else if (action === 'add_customer') {
+          const items = getStorage('customers');
+          const newItem = { ...body, id: Date.now() };
+          items.push(newItem);
+          setStorage('customers', items);
+          resolve({ success: true });
+        }
+        else if (action === 'add_invoice') {
+          const items = getStorage('invoices');
+          items.unshift(body); // Use body directly as we generate ID in submit
+          setStorage('invoices', items);
+          resolve({ success: true });
+        }
         else if (action === 'add_order') {
           let prods = getStorage('products');
           if(body.product_id) {
@@ -203,6 +225,9 @@ async function apiCall(action, method = 'GET', body = null) {
             if(p) p.quantity -= body.items_count;
             setStorage('products', prods);
           }
+          const orders = getStorage('orders');
+          orders.unshift(body);
+          setStorage('orders', orders);
           resolve({ success: true });
         }
         else resolve({ success: true });
