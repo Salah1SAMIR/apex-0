@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APEX SYSTEMS — نظام إدارة الموارد</title>
+<meta name="description" content="APEX SYSTEMS — النظام المتكامل لإدارة الموارد والمؤسسات، لوحة تحكم ذكية وشاملة.">
+<meta property="og:title" content="APEX SYSTEMS — نظام إدارة الموارد">
+<meta property="og:description" content="نظام إدارة الموارد المتكامل للمؤسسات الذكية. لوحة تحكم متطورة، إدارة مبيعات، مخازن، وموارد بشرية.">
+<meta property="og:image" content="nexus_erp_preview.png">
+<meta property="og:url" content="https://apex-systems.io">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="login-bg" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">AX</div>
+      <h2>APEX SYSTEMS</h2>
+      <p>نظام إدارة الموارد المتكامل</p>
+      <p style="font-size:12px;color:var(--accent);margin-top:8px;font-weight:600">المهندس صلاح سمير</p>
+    </div>
+    <div class="login-form">
+      <h3>مرحباً بعودتك</h3>
+      <p>قم بتسجيل الدخول للمتابعة</p>
+      <div class="form-group"><label class="form-label">البريد الإلكتروني</label><input class="form-input" type="email" value="admin@apex-systems.io"></div>
+      <div class="form-group"><label class="form-label">كلمة المرور</label><input class="form-input" type="password" value="••••••••"></div>
+      <button class="login-btn" onclick="doLogin()">تسجيل الدخول &larr;</button>
+    </div>
+  </div>
+</div>
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-header"><h4>الإشعارات</h4><span style="font-size:12px;color:var(--accent);cursor:pointer">تعيين الكل كمقروء</span></div>
+  <div class="notif-item unread"><div class="notif-icon" style="background:var(--green-bg);color:var(--green)"><i class="fas fa-check-circle"></i></div><div class="notif-body"><strong>طلب جديد #4821</strong><span>شركة النور · منذ 5 دقائق</span></div></div>
+  <div class="notif-item unread"><div class="notif-icon" style="background:var(--amber-bg);color:var(--amber)"><i class="fas fa-exclamation-triangle"></i></div><div class="notif-body"><strong>تنبيه مخزون منخفض</strong><span>لابتوب Pro · منذ 20 دقيقة</span></div></div>
+  <div class="notif-item"><div class="notif-icon" style="background:var(--accent-subtle);color:var(--accent)"><i class="fas fa-file-invoice"></i></div><div class="notif-body"><strong>فاتورة #INV-0234</strong><span>تجاوزت تاريخ الاستحقاق</span></div></div>
+  <div class="notif-item"><div class="notif-icon" style="background:var(--purple-bg);color:var(--purple)"><i class="fas fa-user-plus"></i></div><div class="notif-body"><strong>موظف جديد: سارة محمد</strong><span>قسم التقنية · منذ 3 ساعات</span></div></div>
+</div>
+
+<div class="layout" id="appLayout" style="display:none">
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">AX</div>
+      <div><div class="logo-text">APEX</div><div class="logo-sub">Enterprise Systems v2.4</div></div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-section-label">الرئيسية</div>
+      <div class="nav-item active" onclick="navTo('dashboard',this)"><i class="fas fa-th-large"></i><span class="nav-label">لوحة التحكم</span></div>
+      <div class="nav-section-label">إدارة الأعمال</div>
+      <div class="nav-item" onclick="navTo('finance',this)"><i class="fas fa-chart-line"></i><span class="nav-label">المالية</span></div>
+      <div class="nav-item" onclick="navTo('sales',this)"><i class="fas fa-shopping-cart"></i><span class="nav-label">المبيعات</span><span class="nav-badge">12</span></div>
+      <div class="nav-item" onclick="navTo('inventory',this)"><i class="fas fa-boxes"></i><span class="nav-label">المخازن</span><span class="nav-badge" style="background:var(--amber)">!</span></div>
+      <div class="nav-section-label">الموارد</div>
+      <div class="nav-item" onclick="navTo('hr',this)"><i class="fas fa-users"></i><span class="nav-label">الموارد البشرية</span></div>
+      <div class="nav-section-label">النظام</div>
+      <div class="nav-item" onclick="navTo('settings',this)"><i class="fas fa-cog"></i><span class="nav-label">الإعدادات</span></div>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="nav-item">
+        <div style="width:34px;height:34px;border-radius:var(--radius-md);background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;flex-shrink:0">SS</div>
+        <div style="flex:1;min-width:0" class="nav-label"><div style="font-size:13px;font-weight:600;color:var(--text-primary)">م. صلاح سمير</div><div style="font-size:11px;color:var(--text-muted)">مدير النظام</div></div>
+        <i class="fas fa-sign-out-alt nav-label" style="color:var(--text-muted);cursor:pointer" onclick="doLogout()"></i>
+      </div>
+    </div>
+  </nav>
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+  <div class="main">
+    <div class="topbar">
+      <div class="tb-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+      <div class="topbar-search"><i class="fas fa-search"></i><input type="text" placeholder="البحث في النظام..."></div>
+      <div class="topbar-actions">
+        <div class="tb-btn" onclick="toggleTheme()" title="تبديل الثيم"><i id="themeIcon" class="fas fa-moon"></i></div>
+        <div class="tb-btn" onclick="toggleNotif()"><i class="fas fa-bell"></i><span class="notif-dot"></span></div>
+        <div class="avatar">SS</div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="page active" id="page-dashboard">
+        <div class="page-header">
+          <div class="breadcrumb"><span>الرئيسية</span><span class="sep">›</span><span style="color:var(--text-primary)">لوحة التحكم</span></div>
+          <h1>لوحة التحكم</h1>
+          <p>مرحباً مهندس صلاح، ملخص أداء النظام لليوم</p>
+        </div>
+        <div class="cards-grid">
+          <div class="stat-card blue" onclick="navTo('finance',document.querySelectorAll('.nav-item')[1])"><div class="stat-icon blue"><i class="fas fa-dollar-sign"></i></div><div class="stat-label">إجمالي الإيرادات</div><div class="stat-value">2.4M</div><div class="stat-change up"><i class="fas fa-arrow-up"></i> +18.4% هذا الشهر</div></div>
+          <div class="stat-card green" onclick="navTo('sales',document.querySelectorAll('.nav-item')[2])"><div class="stat-icon green"><i class="fas fa-shopping-bag"></i></div><div class="stat-label">الطلبات الجديدة</div><div class="stat-value">1,284</div><div class="stat-change up"><i class="fas fa-arrow-up"></i> +7.2% هذا الأسبوع</div></div>
+          <div class="stat-card amber" onclick="navTo('inventory',document.querySelectorAll('.nav-item')[3])"><div class="stat-icon amber"><i class="fas fa-boxes"></i></div><div class="stat-label">قيمة المخزون</div><div class="stat-value">847K</div><div class="stat-change down"><i class="fas fa-arrow-down"></i> -3.1% هذا الشهر</div></div>
+          <div class="stat-card purple" onclick="navTo('hr',document.querySelectorAll('.nav-item')[4])"><div class="stat-icon purple"><i class="fas fa-users"></i></div><div class="stat-label">إجمالي الموظفين</div><div class="stat-value">342</div><div class="stat-change up"><i class="fas fa-arrow-up"></i> +4 موظفين جدد</div></div>
+        </div>
+        <div class="charts-row">
+          <div class="chart-card"><div class="card-header"><div><div class="card-title">الإيرادات والمصروفات</div><div class="card-subtitle">آخر 8 أشهر</div></div><span class="badge green">+18.4%</span></div><div class="chart-wrap"><canvas id="revenueChart"></canvas></div></div>
+          <div class="chart-card"><div class="card-header"><div><div class="card-title">توزيع المبيعات</div><div class="card-subtitle">حسب الفئة</div></div></div><div class="chart-wrap"><canvas id="donutChart"></canvas></div></div>
+        </div>
+        <div class="bottom-row">
+          <div class="chart-card">
+            <div class="card-header"><div><div class="card-title">أحدث الطلبات</div></div><button class="btn btn-ghost" onclick="navTo('sales',document.querySelectorAll('.nav-item')[2])" style="font-size:12px;padding:6px 12px">عرض الكل</button></div>
+            <div class="table-wrap"><table><thead><tr><th>رقم الطلب</th><th>العميل</th><th>المبلغ</th><th>الحالة</th><th>التاريخ</th></tr></thead><tbody>
+              <tr><td class="td-name">#4821</td><td>شركة النور</td><td style="color:var(--green);font-weight:600">28,400 ر.س</td><td><span class="td-badge success">مكتمل</span></td><td>8 مايو</td></tr>
+              <tr><td class="td-name">#4820</td><td>مؤسسة البيان</td><td style="font-weight:600">15,200 ر.س</td><td><span class="td-badge pending">معلق</span></td><td>8 مايو</td></tr>
+              <tr><td class="td-name">#4819</td><td>شركة تقنية رائد</td><td style="font-weight:600">42,800 ر.س</td><td><span class="td-badge info">قيد المعالجة</span></td><td>7 مايو</td></tr>
+              <tr><td class="td-name">#4818</td><td>مجموعة الأفق</td><td style="color:var(--red);font-weight:600">8,900 ر.س</td><td><span class="td-badge cancelled">ملغي</span></td><td>7 مايو</td></tr>
+              <tr><td class="td-name">#4817</td><td>شركة ذكاء</td><td style="color:var(--green);font-weight:600">67,500 ر.س</td><td><span class="td-badge success">مكتمل</span></td><td>6 مايو</td></tr>
+            </tbody></table></div>
+          </div>
+          <div class="chart-card">
+            <div class="card-header"><div class="card-title">آخر النشاطات</div></div>
+            <div class="activity-list">
+              <div class="activity-item"><div class="activity-icon" style="background:var(--green-bg);color:var(--green)"><i class="fas fa-check"></i></div><div class="activity-text"><strong>تأكيد طلب #4821</strong><span>شركة النور · 28,400 ر.س</span></div><div class="activity-time">5 د</div></div>
+              <div class="activity-item"><div class="activity-icon" style="background:var(--accent-subtle);color:var(--accent)"><i class="fas fa-user-plus"></i></div><div class="activity-text"><strong>إضافة موظف جديد</strong><span>سارة محمد — قسم التقنية</span></div><div class="activity-time">1 س</div></div>
+              <div class="activity-item"><div class="activity-icon" style="background:var(--amber-bg);color:var(--amber)"><i class="fas fa-exclamation"></i></div><div class="activity-text"><strong>تنبيه مخزون منخفض</strong><span>لابتوب Pro X — 5 وحدات</span></div><div class="activity-time">2 س</div></div>
+              <div class="activity-item"><div class="activity-icon" style="background:var(--purple-bg);color:var(--purple)"><i class="fas fa-file-invoice-dollar"></i></div><div class="activity-text"><strong>فاتورة جديدة #INV-0234</strong><span>مستحقة في 15 مايو</span></div><div class="activity-time">3 س</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="page" id="page-finance">
+        <div class="page-header"><div class="breadcrumb"><span>الرئيسية</span><span class="sep">›</span><span style="color:var(--text-primary)">المالية</span></div><h1>الإدارة المالية</h1><p>متابعة الإيرادات والمصروفات والتقارير</p></div>
+        <div class="section-tabs">
+          <button class="tab-btn active" onclick="switchTab('finance-tab-content', 'tab-finance-overview', this)">نظرة عامة</button>
+          <button class="tab-btn" onclick="switchTab('finance-tab-content', 'tab-finance-invoices', this)">الفواتير</button>
+          <button class="tab-btn" onclick="switchTab('finance-tab-content', 'tab-finance-pl', this)">الأرباح والخسائر</button>
+        </div>
+        <div id="tab-finance-overview" class="finance-tab-content" style="display:block;">
+        <div class="kpi-row">
+          <div class="kpi-card"><div class="kpi-ico" style="background:var(--green-bg);color:var(--green)"><i class="fas fa-arrow-trend-up"></i></div><div><div class="kpi-val">2,412,800</div><div class="kpi-lbl">إجمالي الإيرادات (ر.س)</div></div></div>
+          <div class="kpi-card"><div class="kpi-ico" style="background:var(--red-bg);color:var(--red)"><i class="fas fa-arrow-trend-down"></i></div><div><div class="kpi-val">1,148,400</div><div class="kpi-lbl">إجمالي المصروفات (ر.س)</div></div></div>
+          <div class="kpi-card"><div class="kpi-ico" style="background:var(--accent-subtle);color:var(--accent)"><i class="fas fa-balance-scale"></i></div><div><div class="kpi-val">1,264,400</div><div class="kpi-lbl">صافي الربح (ر.س)</div></div></div>
+        </div>
+        <div class="full-table-card">
+          <div class="table-toolbar"><input class="search-input" placeholder="البحث في الفواتير..."><button class="btn btn-ghost"><i class="fas fa-filter" style="margin-left:6px"></i>تصفية</button><button class="btn btn-ghost"><i class="fas fa-download" style="margin-left:6px"></i>تصدير</button><button class="btn btn-primary" onclick="openAddInvoiceModal()" style="margin-right:auto"><i class="fas fa-plus" style="margin-left:6px"></i>فاتورة جديدة</button></div>
+          <table><thead><tr><th>رقم الفاتورة</th><th>العميل</th><th>التاريخ</th><th>الاستحقاق</th><th>المبلغ</th><th>الحالة</th></tr></thead>
+          <tbody id="invoicesTableBody">
+            <!-- سيتم جلب الفواتير من API -->
+          </tbody></table>
+        </div>
+        </div>
+        
+        <div id="tab-finance-invoices" class="finance-tab-content" style="display:none;">
+          <div class="full-table-card">
+            <div class="table-toolbar">
+              <input class="search-input" placeholder="البحث في الفواتير...">
+              <button class="btn btn-ghost"><i class="fas fa-filter" style="margin-left:6px"></i>تصفية</button>
+              <button class="btn btn-primary" onclick="openAddInvoiceModal()" style="margin-right:auto"><i class="fas fa-plus" style="margin-left:6px"></i>فاتورة جديدة</button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>رقم الفاتورة</th>
+                  <th>العميل</th>
+                  <th>تاريخ الإصدار</th>
+                  <th>تاريخ الاستحقاق</th>
+                  <th>المبلغ الإجمالي</th>
+                  <th>الحالة</th>
+                </tr>
+              </thead>
+              <tbody id="allInvoicesTableBody">
+                <!-- سيتم جلب الفواتير من API -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div id="tab-finance-pl" class="finance-tab-content" style="display:none;">
+          <div class="kpi-row" style="margin-bottom: 24px;">
+            <div class="kpi-card"><div class="kpi-ico" style="background:var(--green-bg);color:var(--green)"><i class="fas fa-arrow-trend-up"></i></div><div><div class="kpi-val" id="plRevenue">0</div><div class="kpi-lbl">إجمالي الإيرادات (ر.س)</div></div></div>
+            <div class="kpi-card"><div class="kpi-ico" style="background:var(--red-bg);color:var(--red)"><i class="fas fa-arrow-trend-down"></i></div><div><div class="kpi-val" id="plExpenses">0</div><div class="kpi-lbl">إجمالي المصروفات (ر.س)</div></div></div>
+            <div class="kpi-card"><div class="kpi-ico" style="background:var(--accent-subtle);color:var(--accent)"><i class="fas fa-balance-scale"></i></div><div><div class="kpi-val" id="plNet">0</div><div class="kpi-lbl">صافي الربح (ر.س)</div></div></div>
+          </div>
+          <div class="cards-grid">
+            <div class="full-table-card" style="grid-column: span 2;">
+              <div class="table-toolbar">
+                <h4>تفاصيل المصروفات</h4>
+                <button class="btn btn-primary" onclick="openAddExpenseModal()" style="margin-right:auto"><i class="fas fa-plus" style="margin-left:6px"></i>إضافة مصروف</button>
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>البند</th>
+                    <th>الفئة</th>
+                    <th>التاريخ</th>
+                    <th>المبلغ</th>
+                  </tr>
+                </thead>
+                <tbody id="plExpensesTableBody">
+                  <!-- Expenses will be dynamically loaded here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="page" id="page-sales">
+        <div class="page-header"><div class="breadcrumb"><span>الرئيسية</span><span class="sep">›</span><span style="color:var(--text-primary)">المبيعات</span></div><h1>إدارة المبيعات</h1><p>العملاء، الطلبات، والفواتير</p></div>
+        <div class="section-tabs">
+          <button class="tab-btn active" onclick="switchTab('sales-tab-content', 'tab-sales-orders', this)">الطلبات</button>
+          <button class="tab-btn" onclick="switchTab('sales-tab-content', 'tab-sales-customers', this)">العملاء</button>
+          <button class="tab-btn" onclick="switchTab('sales-tab-content', 'tab-sales-products', this)">المنتجات</button>
+        </div>
+        <div id="tab-sales-orders" class="sales-tab-content" style="display:block;">
+        <div class="cards-grid" style="margin-bottom:24px">
+          <div class="stat-card blue"><div class="stat-icon blue"><i class="fas fa-shopping-cart"></i></div><div class="stat-label">إجمالي الطلبات</div><div class="stat-value">4,821</div><div class="stat-change up"><i class="fas fa-arrow-up"></i> +12% الشهر</div></div>
+          <div class="stat-card green"><div class="stat-icon green"><i class="fas fa-check-circle"></i></div><div class="stat-label">طلبات مكتملة</div><div class="stat-value">3,954</div><div class="stat-change up"><i class="fas fa-arrow-up"></i> 82% معدل الإنجاز</div></div>
+          <div class="stat-card amber"><div class="stat-icon amber"><i class="fas fa-clock"></i></div><div class="stat-label">قيد المعالجة</div><div class="stat-value">612</div><div class="stat-change up"><i class="fas fa-arrow-up"></i> 12 اليوم</div></div>
+          <div class="stat-card red"><div class="stat-icon red"><i class="fas fa-times-circle"></i></div><div class="stat-label">ملغاة</div><div class="stat-value">255</div><div class="stat-change down"><i class="fas fa-arrow-down"></i> -2.1%</div></div>
+        </div>
+        <div class="full-table-card">
+          <div class="table-toolbar"><input class="search-input" placeholder="البحث في الطلبات..."><button class="btn btn-ghost"><i class="fas fa-filter" style="margin-left:6px"></i>تصفية</button><button class="btn btn-primary" onclick="openAddOrderModal()" style="margin-right:auto"><i class="fas fa-plus" style="margin-left:6px"></i>طلب جديد</button></div>
+          <table><thead><tr><th>رقم الطلب</th><th>العميل</th><th>المنتجات</th><th>المبلغ</th><th>الحالة</th><th>التاريخ</th></tr></thead><tbody id="ordersTableBody">
+            <!-- Dynamic Orders -->
+          </tbody></table>
+        </div>
+        </div>
+        
+        <div id="tab-sales-customers" class="sales-tab-content" style="display:none;">
+          <div class="full-table-card">
+            <div class="table-toolbar">
+              <input class="search-input" placeholder="البحث عن عميل...">
+              <button class="btn btn-ghost"><i class="fas fa-filter" style="margin-left:6px"></i>تصفية</button>
+              <button class="btn btn-primary" onclick="openAddCustomerModal()" style="margin-right:auto"><i class="fas fa-plus" style="margin-left:6px"></i>إضافة عميل</button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>العميل</th>
+                  <th>البريد الإلكتروني</th>
+                  <th>الهاتف</th>
+                  <th>إجمالي الطلبات</th>
+                  <th>إجمالي المشتريات</th>
+                  <th>الحالة</th>
+                </tr>
+              </thead>
+              <tbody id="salesCustomersTableBody">
+                <!-- Dynamic Customers -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div id="tab-sales-products" class="sales-tab-content" style="display:none;">
+          <div class="full-table-card">
+            <div class="table-toolbar">
+              <input class="search-input" placeholder="البحث في منتجات المبيعات...">
+              <button class="btn btn-ghost"><i class="fas fa-filter" style="margin-left:6px"></i>تصفية</button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>المنتج</th>
+                  <th>الفئة</th>
+                  <th>السعر</th>
+                  <th>المخزون الحالي</th>
+                  <th>الحالة</th>
+                </tr>
+              </thead>
+              <tbody id="salesProductsTableBody">
+                <!-- Reused from main products but filtered for sales view if needed -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="page" id="page-inventory">
+        <div class="page-header"><div class="breadcrumb"><span>الرئيسية</span><span class="sep">›</span><span style="color:var(--text-primary)">المخازن</span></div><h1>إدارة المخازن</h1><p>تتبع المنتجات والكميات والتنبيهات</p></div>
+        <div class="kpi-row">
+          <div class="kpi-card"><div class="kpi-ico" style="background:var(--accent-subtle);color:var(--accent)"><i class="fas fa-boxes"></i></div><div><div class="kpi-val">1,847</div><div class="kpi-lbl">إجمالي المنتجات</div></div></div>
+          <div class="kpi-card"><div class="kpi-ico" style="background:var(--amber-bg);color:var(--amber)"><i class="fas fa-exclamation-triangle"></i></div><div><div class="kpi-val">23</div><div class="kpi-lbl">منتجات بمخزون منخفض</div></div></div>
+          <div class="kpi-card"><div class="kpi-ico" style="background:var(--green-bg);color:var(--green)"><i class="fas fa-dollar-sign"></i></div><div><div class="kpi-val">847,200</div><div class="kpi-lbl">قيمة المخزون (ر.س)</div></div></div>
+        </div>
+        <div class="full-table-card">
+          <div class="table-toolbar"><input class="search-input" placeholder="البحث عن منتج..."><button class="btn btn-ghost"><i class="fas fa-filter" style="margin-left:6px"></i>تصفية</button><button class="btn btn-primary" onclick="openAddProductModal()" style="margin-right:auto"><i class="fas fa-plus" style="margin-left:6px"></i>إضافة منتج</button></div>
+          <table><thead><tr><th>المنتج</th><th>الفئة</th><th>الكمية</th><th>الحد الأدنى</th><th>السعر</th><th>الحالة</th></tr></thead><tbody id="productsTableBody">
+            <!-- Dynamic Products -->
+          </tbody></table>
+        </div>
+        <div class="chart-card" style="margin-top:16px">
+          <div class="card-header"><div class="card-title">استخدام المخازن حسب الفئة</div></div>
+          <div style="display:flex;flex-direction:column;gap:16px;padding-top:8px">
+            <div><div style="display:flex;justify-content:space-between;font-size:13px"><span>إلكترونيات</span><span style="color:var(--accent);font-weight:600">68%</span></div><div class="progress-bar"><div class="progress-fill" style="width:68%;background:var(--accent)"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:13px"><span>مكتبية</span><span style="color:var(--green);font-weight:600">45%</span></div><div class="progress-bar"><div class="progress-fill" style="width:45%;background:var(--green)"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:13px"><span>ملحقات</span><span style="color:var(--amber);font-weight:600">82%</span></div><div class="progress-bar"><div class="progress-fill" style="width:82%;background:var(--amber)"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:13px"><span>هواتف</span><span style="color:var(--purple);font-weight:600">33%</span></div><div class="progress-bar"><div class="progress-fill" style="width:33%;background:var(--purple)"></div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="page" id="page-hr">
+        <div class="page-header"><div class="breadcrumb"><span>الرئيسية</span><span class="sep">›</span><span style="color:var(--text-primary)">الموارد البشرية</span></div><h1>الموارد البشرية</h1><p>إدارة الموظفين والرواتب والحضور</p></div>
+        <div class="section-tabs">
+          <button class="tab-btn active" onclick="switchHrTab('emp-grid', this)">الموظفون</button>
+          <button class="tab-btn" onclick="switchHrTab('salaries-tab', this)">الرواتب</button>
+          <button class="tab-btn" onclick="switchHrTab('attendance-tab', this)">الحضور</button>
+          <button class="tab-btn" onclick="switchHrTab('leaves-tab', this)">الإجازات</button>
+        </div>
+        <div id="emp-grid" class="hr-tab-content" style="display:grid;">
+        <div class="emp-grid" id="employeesGrid">
+          <!-- سيتم جلب الموظفين من API -->
+          <div class="emp-card add-emp-btn" onclick="openAddEmployeeModal()" style="border:2px dashed var(--border);background:transparent;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--text-muted);cursor:pointer;transition:all 0.3s ease;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)';" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)';"><div style="font-size:32px"><i class="fas fa-plus-circle"></i></div><div style="font-size:13px;font-weight:500">إضافة موظف جديد</div></div>
+        </div>
+        </div>
+        <div id="salaries-tab" class="hr-tab-content" style="display:none;">
+          <div class="full-table-card">
+            <div class="table-toolbar">
+              <input class="search-input" placeholder="البحث عن موظف...">
+              <button class="btn btn-ghost"><i class="fas fa-filter" style="margin-left:6px"></i>تصفية</button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>الموظف</th>
+                  <th>الراتب الأساسي</th>
+                  <th>الخصومات (تأخير وغياب)</th>
+                  <th>صافي الراتب</th>
+                  <th>الحالة</th>
+                </tr>
+              </thead>
+              <tbody id="salariesTableBody">
+                <!-- Salaries will be dynamically loaded here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="attendance-tab" class="hr-tab-content" style="display:none;">
+          <div class="full-table-card">
+            <div class="table-toolbar">
+              <input class="search-input" placeholder="البحث عن موظف...">
+              <button class="btn btn-ghost"><i class="fas fa-filter" style="margin-left:6px"></i>تصفية</button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>الموظف</th>
+                  <th>القسم</th>
+                  <th>وقت الحضور</th>
+                  <th>وقت الانصراف</th>
+                  <th>حالة البصمة</th>
+                </tr>
+              </thead>
+              <tbody id="attendanceTableBody">
+                <!-- Attendance will be dynamically loaded here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="leaves-tab" class="hr-tab-content" style="display:none;">
+          <div class="full-table-card">
+            <div class="table-toolbar">
+              <input class="search-input" placeholder="البحث عن موظف...">
+              <button class="btn btn-ghost"><i class="fas fa-filter" style="margin-left:6px"></i>تصفية</button>
+              <button class="btn btn-primary" onclick="openAddLeaveModal()" style="margin-right:auto"><i class="fas fa-plus" style="margin-left:6px"></i>تقديم طلب إجازة</button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>الموظف</th>
+                  <th>نسبة الحضور</th>
+                  <th>الرصيد الكلي (أيام)</th>
+                  <th>الرصيد المستحق (أيام)</th>
+                  <th>الحالة</th>
+                </tr>
+              </thead>
+              <tbody id="leavesTableBody">
+                <!-- Leaves will be dynamically loaded here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="page" id="page-settings">
+        <div class="page-header"><div class="breadcrumb"><span>الرئيسية</span><span class="sep">›</span><span style="color:var(--text-primary)">الإعدادات</span></div><h1>إعدادات النظام</h1><p>تخصيص وإدارة النظام</p></div>
+        <div class="settings-grid">
+          <div class="settings-nav">
+            <div class="settings-nav-item active" onclick="switchTab('settings-tab-content', 'tab-settings-company', this)"><i class="fas fa-building" style="width:18px"></i>معلومات الشركة</div>
+            <div class="settings-nav-item" onclick="switchTab('settings-tab-content', 'tab-settings-users', this)"><i class="fas fa-users-cog" style="width:18px"></i>المستخدمون</div>
+            <div class="settings-nav-item" onclick="switchTab('settings-tab-content', 'tab-settings-appearance', this)"><i class="fas fa-palette" style="width:18px"></i>المظهر</div>
+            <div class="settings-nav-item" onclick="switchTab('settings-tab-content', 'tab-settings-notifications', this)"><i class="fas fa-bell" style="width:18px"></i>الإشعارات</div>
+            <div class="settings-nav-item" onclick="switchTab('settings-tab-content', 'tab-settings-security', this)"><i class="fas fa-shield-alt" style="width:18px"></i>الأمان</div>
+            <div class="settings-nav-item" onclick="switchTab('settings-tab-content', 'tab-settings-database', this)"><i class="fas fa-database" style="width:18px"></i>قاعدة البيانات</div>
+          </div>
+          <div id="tab-settings-company" class="settings-panel settings-tab-content" style="display:block;">
+            <div class="settings-title">معلومات الشركة</div>
+            <div class="settings-desc">تحديث البيانات الأساسية للشركة</div>
+            <div class="form-row"><div class="form-group"><label class="form-label">اسم الشركة</label><input class="form-input" id="setCompanyName" value="APEX Solutions للتقنية والحلول الذكية"></div><div class="form-group"><label class="form-label">رقم السجل التجاري</label><input class="form-input" id="setRegNumber" value="1234567890"></div></div>
+            <div class="form-row"><div class="form-group"><label class="form-label">البريد الإلكتروني</label><input class="form-input" id="setCompanyEmail" value="info@apex-solutions.io"></div><div class="form-group"><label class="form-label">رقم الهاتف</label><input class="form-input" id="setCompanyPhone" value="+966 11 234 5678"></div></div>
+            <div class="form-group"><label class="form-label">العنوان</label><input class="form-input" id="setCompanyAddress" value="الرياض، المملكة العربية السعودية"></div>
+            <div style="margin-top:8px">
+              <div class="toggle-row"><div class="toggle-info"><h4>الوضع التجريبي</h4><p>تفعيل ميزات تجريبية</p></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+              <div class="toggle-row"><div class="toggle-info"><h4>الإشعارات البريدية</h4><p>تقارير يومية على البريد</p></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+              <div class="toggle-row"><div class="toggle-info"><h4>السجل التلقائي</h4><p>حفظ سجل كامل للعمليات</p></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+            </div>
+            <div style="margin-top:24px;display:flex;gap:12px"><button class="btn btn-primary" onclick="saveSettings()">حفظ التغييرات</button><button class="btn btn-ghost">إلغاء</button></div>
+          </div>
+          
+          <div id="tab-settings-users" class="settings-panel settings-tab-content" style="display:none;">
+            <div class="settings-title">إدارة المستخدمين</div>
+            <div class="settings-desc">صلاحيات الوصول وحسابات النظام للموظفين</div>
+            <div class="full-table-card" style="margin-top:16px;">
+              <div class="table-toolbar">
+                <input class="search-input" placeholder="البحث عن مستخدم...">
+                <button class="btn btn-primary" onclick="navTo('hr',document.querySelectorAll('.nav-item')[3]); switchHrTab('emp-grid', document.querySelectorAll('.hr-tab-content')[0].previousElementSibling.children[0]); openAddEmployeeModal();" style="margin-right:auto"><i class="fas fa-plus" style="margin-left:6px"></i>إضافة مستخدم</button>
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>المستخدم</th>
+                    <th>الدور (الصلاحية)</th>
+                    <th>تاريخ الإضافة</th>
+                    <th>الحالة</th>
+                  </tr>
+                </thead>
+                <tbody id="settingsUsersTableBody">
+                  <!-- Users will be dynamically loaded here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div id="tab-settings-appearance" class="settings-panel settings-tab-content" style="display:none;">
+            <div class="settings-title">المظهر والسمات</div>
+            <div class="settings-desc">تخصيص تجربة العرض المرئية للنظام</div>
+            <div class="form-group">
+              <label class="form-label">الوضع الحالي</label>
+              <div class="toggle-row">
+                <div class="toggle-info"><h4>الوضع الليلي</h4><p>تبديل بين الوضع الفاتح والداكن</p></div>
+                <div class="toggle on" id="settingThemeToggle" onclick="toggleTheme()"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">اللون الأساسي</label>
+              <div style="display:flex;gap:12px;margin-top:8px">
+                <div style="width:32px;height:32px;border-radius:50%;background:#4f7cff;cursor:pointer;border:2px solid #fff;box-shadow:0 0 0 2px #4f7cff"></div>
+                <div style="width:32px;height:32px;border-radius:50%;background:#22d3a0;cursor:pointer;"></div>
+                <div style="width:32px;height:32px;border-radius:50%;background:#ff4f6a;cursor:pointer;"></div>
+                <div style="width:32px;height:32px;border-radius:50%;background:#a78bfa;cursor:pointer;"></div>
+              </div>
+            </div>
+            <div style="margin-top:24px;display:flex;gap:12px"><button class="btn btn-primary">حفظ الإعدادات</button></div>
+          </div>
+          
+          <div id="tab-settings-notifications" class="settings-panel settings-tab-content" style="display:none;">
+            <div class="settings-title">تفضيلات الإشعارات</div>
+            <div class="settings-desc">التحكم في كيفية ومتى تتلقى التنبيهات</div>
+            <div class="toggle-row">
+              <div class="toggle-info"><h4>إشعارات النظام</h4><p>تنبيهات مباشرة داخل لوحة التحكم</p></div>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><h4>تنبيهات البريد الإلكتروني</h4><p>إرسال ملخص يومي للعمليات</p></div>
+              <div class="toggle" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><h4>تنبيهات المبيعات</h4><p>إشعار فوري عند إتمام عملية بيع</p></div>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><h4>تنبيهات المخزون</h4><p>تحذير عند وصول المنتجات للحد الأدنى</p></div>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div style="margin-top:24px;"><button class="btn btn-primary">تحديث التفضيلات</button></div>
+          </div>
+          
+          <div id="tab-settings-security" class="settings-panel settings-tab-content" style="display:none;">
+            <div class="settings-title">الأمان والخصوصية</div>
+            <div class="settings-desc">إدارة حماية حسابك وكلمات المرور</div>
+            <div class="form-group">
+              <label class="form-label">كلمة المرور الحالية</label>
+              <input type="password" class="form-input" value="********">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">كلمة المرور الجديدة</label>
+                <input type="password" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label">تأكيد كلمة المرور</label>
+                <input type="password" class="form-input">
+              </div>
+            </div>
+            <div class="toggle-row" style="background:var(--bg-tertiary);padding:12px;border-radius:var(--radius-md);margin-top:16px;">
+              <div class="toggle-info"><h4>المصادقة الثنائية (2FA)</h4><p>تأمين الحساب عبر تطبيق التحقق</p></div>
+              <div class="toggle" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div style="margin-top:24px;display:flex;gap:12px"><button class="btn btn-primary">تغيير كلمة المرور</button></div>
+          </div>
+          
+          <div id="tab-settings-database" class="settings-panel settings-tab-content" style="display:none;">
+            <div class="settings-title">إدارة قاعدة البيانات</div>
+            <div class="settings-desc">التحكم في البيانات والنسخ الاحتياطي</div>
+            <div class="cards-grid" style="grid-template-columns:1fr 1fr;margin-top:16px;">
+              <div class="stat-card blue" style="text-align:center;padding:24px;">
+                <i class="fas fa-download" style="font-size:24px;margin-bottom:12px"></i>
+                <div class="stat-label">نسخة احتياطية كاملة</div>
+                <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="alert('جاري تجهيز النسخة الاحتياطية...')">تحميل SQL</button>
+              </div>
+              <div class="stat-card purple" style="text-align:center;padding:24px;">
+                <i class="fas fa-broom" style="font-size:24px;margin-bottom:12px"></i>
+                <div class="stat-label">تنظيف التخزين المؤقت</div>
+                <button class="btn btn-ghost" style="width:100%;margin-top:12px" onclick="location.reload()">تفريغ Cache</button>
+              </div>
+            </div>
+            <div class="toggle-row" style="margin-top:20px;">
+              <div class="toggle-info"><h4>النسخ الاحتياطي التلقائي</h4><p>حفظ نسخة يومياً في تمام الساعة 12 صباحاً</p></div>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Invoice Modal -->
+<div class="invoice-modal-overlay" id="invoiceModalOverlay">
+  <div class="invoice-modal">
+    <div class="invoice-modal-header">
+      <div class="invoice-title">
+        <h2 id="modalInvoiceId">#INV-0000</h2>
+        <span class="td-badge" id="modalInvoiceStatus">حالة</span>
+      </div>
+      <button class="modal-close-btn" onclick="closeInvoiceModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="invoice-modal-body" id="printableInvoice">
+      <div class="invoice-top-info">
+        <div class="info-block">
+          <span class="info-label">إلى العميل</span>
+          <strong class="info-value" id="modalClientName">اسم العميل</strong>
+          <span class="info-sub">الرياض، المملكة العربية السعودية</span>
+        </div>
+        <div class="info-block" style="text-align: left; align-items: flex-end;">
+          <span class="info-label">تفاصيل الفاتورة</span>
+          <div class="info-row"><span>تاريخ الإصدار:</span> <strong id="modalDate">--</strong></div>
+          <div class="info-row"><span>تاريخ الاستحقاق:</span> <strong id="modalDueDate">--</strong></div>
+          <div class="info-row"><span>طريقة الدفع:</span> <strong id="modalPaymentMethod">--</strong></div>
+        </div>
+      </div>
+      
+      <div class="invoice-items-wrapper">
+        <table class="invoice-items-table">
+          <thead>
+            <tr>
+              <th>الوصف</th>
+              <th>الكمية</th>
+              <th>السعر</th>
+              <th>الإجمالي</th>
+            </tr>
+          </thead>
+          <tbody id="modalInvoiceItems">
+            <!-- Items will be injected here -->
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="invoice-summary">
+        <div class="summary-row">
+          <span>المجموع الفرعي</span>
+          <span id="modalSubtotal">0 ر.س</span>
+        </div>
+        <div class="summary-row">
+          <span>الضريبة (15%)</span>
+          <span id="modalTax">0 ر.س</span>
+        </div>
+        <div class="summary-row total-row">
+          <span>الإجمالي الكلي</span>
+          <strong id="modalTotalAmount">0 ر.س</strong>
+        </div>
+      </div>
+    </div>
+    <div class="invoice-modal-footer">
+      <div class="modal-actions-left">
+        <button class="btn btn-ghost" onclick="printInvoice()"><i class="fas fa-print"></i> طباعة</button>
+        <button class="btn btn-ghost" onclick="downloadInvoice()"><i class="fas fa-download"></i> تحميل PDF</button>
+      </div>
+      <div class="modal-actions-right">
+        <button class="btn btn-primary" onclick="markInvoicePaid()" id="btnMarkPaid"><i class="fas fa-check"></i> تعيين كمدفوعة</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Add Employee Modal -->
+<div class="invoice-modal-overlay" id="addEmployeeModalOverlay">
+  <div class="invoice-modal" style="max-width: 500px;">
+    <div class="invoice-modal-header">
+      <div class="invoice-title">
+        <h2>إضافة موظف جديد</h2>
+      </div>
+      <button class="modal-close-btn" onclick="closeAddEmployeeModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="invoice-modal-body">
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label class="form-label">الاسم الرباعي</label>
+        <input type="text" id="newEmpName" class="form-input" placeholder="مثال: طارق سعيد الغامدي">
+      </div>
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label class="form-label">المسمى الوظيفي</label>
+        <input type="text" id="newEmpRole" class="form-input" placeholder="مثال: مطور واجهات · تقنية المعلومات">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">الراتب الأساسي (ر.س)</label>
+          <input type="number" id="newEmpSalary" class="form-input" placeholder="مثال: 12000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">نسبة الحضور المتوقعة (%)</label>
+          <input type="number" id="newEmpAttendance" class="form-input" placeholder="مثال: 100" value="100">
+        </div>
+      </div>
+    </div>
+    <div class="invoice-modal-footer" style="justify-content: flex-end;">
+      <button class="btn btn-ghost" onclick="closeAddEmployeeModal()">إلغاء</button>
+      <button class="btn btn-primary" onclick="submitAddEmployee()"><i class="fas fa-plus"></i> إضافة الموظف</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Invoice Modal -->
+<div class="invoice-modal-overlay" id="addInvoiceModalOverlay">
+  <div class="invoice-modal" style="max-width: 500px;">
+    <div class="invoice-modal-header">
+      <div class="invoice-title"><h2>فاتورة جديدة</h2></div>
+      <button class="modal-close-btn" onclick="closeAddInvoiceModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="invoice-modal-body">
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label class="form-label">العميل</label>
+        <input type="text" id="newInvClient" class="form-input" placeholder="اسم العميل">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">المبلغ الإجمالي</label>
+          <input type="number" id="newInvAmount" class="form-input" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">تاريخ الاستحقاق</label>
+          <input type="date" id="newInvDueDate" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">الحالة</label>
+          <select id="newInvStatus" class="form-input">
+            <option value="pending">معلق</option>
+            <option value="success">مدفوعة</option>
+            <option value="info">مرسلة</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">طريقة الدفع</label>
+          <select id="newInvPaymentMethod" class="form-input">
+            <option value="تحويل بنكي">تحويل بنكي</option>
+            <option value="فيزا">فيزا</option>
+            <option value="نقداً">نقداً</option>
+            <option value="مدى">مدى</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="invoice-modal-footer" style="justify-content: flex-end;">
+      <button class="btn btn-ghost" onclick="closeAddInvoiceModal()">إلغاء</button>
+      <button class="btn btn-primary" onclick="submitAddInvoice()"><i class="fas fa-plus"></i> إنشاء فاتورة</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Product Modal -->
+<div class="invoice-modal-overlay" id="addProductModalOverlay">
+  <div class="invoice-modal" style="max-width: 500px;">
+    <div class="invoice-modal-header">
+      <div class="invoice-title"><h2>إضافة منتج</h2></div>
+      <button class="modal-close-btn" onclick="closeAddProductModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="invoice-modal-body">
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label class="form-label">اسم المنتج</label>
+        <input type="text" id="newProdName" class="form-input">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">الفئة</label>
+          <select id="newProdCategory" class="form-input">
+            <option>إلكترونيات</option><option>مكتبية</option><option>هواتف</option><option>ملحقات</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">السعر</label>
+          <input type="number" id="newProdPrice" class="form-input" placeholder="0">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">الكمية</label>
+          <input type="number" id="newProdQty" class="form-input" value="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">الحد الأدنى</label>
+          <input type="number" id="newProdMinQty" class="form-input" value="5">
+        </div>
+      </div>
+    </div>
+    <div class="invoice-modal-footer" style="justify-content: flex-end;">
+      <button class="btn btn-ghost" onclick="closeAddProductModal()">إلغاء</button>
+      <button class="btn btn-primary" onclick="submitAddProduct()"><i class="fas fa-plus"></i> إضافة المنتج</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Order Modal -->
+<div class="invoice-modal-overlay" id="addOrderModalOverlay">
+  <div class="invoice-modal" style="max-width: 500px;">
+    <div class="invoice-modal-header">
+      <div class="invoice-title"><h2>طلب مبيعات جديد</h2></div>
+      <button class="modal-close-btn" onclick="closeAddOrderModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="invoice-modal-body">
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label class="form-label">العميل</label>
+        <input type="text" id="newOrdClient" class="form-input">
+      </div>
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label class="form-label">المنتج المطلوب</label>
+        <select id="newOrdProduct" class="form-input">
+          <!-- Populated from productsData -->
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">عدد المنتجات</label>
+          <input type="number" id="newOrdItems" class="form-input" value="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">المبلغ</label>
+          <input type="number" id="newOrdAmount" class="form-input" placeholder="0">
+        </div>
+      </div>
+    </div>
+    <div class="invoice-modal-footer" style="justify-content: flex-end;">
+      <button class="btn btn-ghost" onclick="closeAddOrderModal()">إلغاء</button>
+      <button class="btn btn-primary" onclick="submitAddOrder()"><i class="fas fa-plus"></i> إضافة الطلب</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Expense Modal -->
+<div class="invoice-modal-overlay" id="addExpenseModalOverlay">
+  <div class="invoice-modal" style="max-width: 500px;">
+    <div class="invoice-modal-header">
+      <div class="invoice-title"><h2>إضافة مصروف</h2></div>
+      <button class="modal-close-btn" onclick="closeAddExpenseModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="invoice-modal-body">
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label class="form-label">البند</label>
+        <input type="text" id="newExpDesc" class="form-input">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">المبلغ</label>
+          <input type="number" id="newExpAmount" class="form-input" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">الفئة</label>
+          <select id="newExpCategory" class="form-input">
+            <option>تشغيلية</option><option>رواتب</option><option>تسويق</option><option>تقنية</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="invoice-modal-footer" style="justify-content: flex-end;">
+      <button class="btn btn-ghost" onclick="closeAddExpenseModal()">إلغاء</button>
+      <button class="btn btn-primary" onclick="submitAddExpense()"><i class="fas fa-plus"></i> إضافة المصروف</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Leave Modal -->
+<div class="invoice-modal-overlay" id="addLeaveModalOverlay">
+  <div class="invoice-modal" style="max-width: 500px;">
+    <div class="invoice-modal-header">
+      <div class="invoice-title"><h2>تقديم طلب إجازة</h2></div>
+      <button class="modal-close-btn" onclick="closeAddLeaveModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="invoice-modal-body">
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label class="form-label">الموظف</label>
+        <select id="newLeaveEmp" class="form-input">
+          <!-- Populated from employeesData -->
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">عدد الأيام</label>
+        <input type="number" id="newLeaveDays" class="form-input" value="1" min="1">
+      </div>
+    </div>
+    <div class="invoice-modal-footer" style="justify-content: flex-end;">
+      <button class="btn btn-ghost" onclick="closeAddLeaveModal()">إلغاء</button>
+      <button class="btn btn-primary" onclick="submitAddLeave()"><i class="fas fa-plus"></i> تقديم الطلب</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Customer Modal -->
+<div class="invoice-modal-overlay" id="addCustomerModalOverlay">
+  <div class="invoice-modal" style="max-width: 500px;">
+    <div class="invoice-modal-header">
+      <div class="invoice-title"><h2>إضافة عميل جديد</h2></div>
+      <button class="modal-close-btn" onclick="closeAddCustomerModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="invoice-modal-body">
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label class="form-label">اسم العميل / الشركة</label>
+        <input type="text" id="newCustName" class="form-input" placeholder="مثال: شركة الخليج للخدمات">
+      </div>
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label class="form-label">البريد الإلكتروني</label>
+        <input type="email" id="newCustEmail" class="form-input" placeholder="example@domain.com">
+      </div>
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label class="form-label">رقم الهاتف</label>
+        <input type="text" id="newCustPhone" class="form-input" placeholder="05xxxxxxxx">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">إجمالي الطلبات</label>
+          <input type="number" id="newCustOrders" class="form-input" value="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">إجمالي المشتريات (ر.س)</label>
+          <input type="number" id="newCustSpent" class="form-input" value="0">
+        </div>
+      </div>
+    </div>
+    <div class="invoice-modal-footer" style="justify-content: flex-end;">
+      <button class="btn btn-ghost" onclick="closeAddCustomerModal()">إلغاء</button>
+      <button class="btn btn-primary" onclick="submitAddCustomer()"><i class="fas fa-plus"></i> إضافة العميل</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

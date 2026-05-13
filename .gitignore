@@ -1,0 +1,10 @@
+# Database
+api/database.sqlite
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# XAMPP/Local environment files
+php.ini
+.htaccess
